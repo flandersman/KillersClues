@@ -3,106 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to My Challenge</title>
+    <title>Riddle Challenge</title>
     <style>
         body {
-            background-color: #0a0a0a;
-            color: #32cd32;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: Arial, sans-serif;
+            background-color: #1b1b1b;
+            color: #ffffff;
             text-align: center;
-            padding: 50px;
+            padding: 20px;
         }
-        input, button {
+        #riddle, #chat, #response {
+            margin: 20px 0;
             padding: 10px;
-            font-size: 1em;
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            background-color: #333333;
         }
-        .submit-btn {
-            margin-top: 20px;
+        #submit {
             padding: 10px 20px;
-            background-color: #32cd32;
+            background-color: #007bff;
             border: none;
-            color: black;
+            color: white;
+            border-radius: 5px;
             cursor: pointer;
         }
-        .result {
-            margin-top: 20px;
-            font-size: 1.2em;
+        #submit:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to My Little Challenge</h1>
-    <div class="story">
-        <p id="story-text">Who are you?</p>
-    </div>
-    <div class="answer-input">
-        <input type="text" id="answer" placeholder="Type your answer...">
-        <button class="submit-btn" onclick="checkAnswer()">Submit</button>
-    </div>
-    <div class="result" id="result"></div>
+    <h1>Welcome to my little challenge</h1>
+    <div id="chat"></div>
+    <div id="riddle" class="hidden"></div>
+    <input type="text" id="answer" placeholder="Your answer here" />
+    <button id="submit">Submit</button>
 
-    <script>
-        let stage = 0;
-        let tries = 3;
-
-        function checkAnswer() {
-            const userAnswer = document.getElementById('answer').value.toLowerCase();
-            const resultDiv = document.getElementById('result');
-            const storyText = document.getElementById('story-text');
-
-            if (stage === 0) {
-                storyText.innerHTML = "Not yet... Find out my philosophy and I'll tell you. Riddle: 'I dance on the edge of time, yet never leave a trace, In memories I linger, but soon I’m out of place. What am I?'"; 
-                stage = 1;
-            } else if (stage === 1) {
-                if (userAnswer === 'time') {
-                    storyText.innerHTML = "Correct! Now... you have to find the answers to each riddle and unscramble the words to find my little secret...";
-                    stage = 2;
-                } else {
-                    tries--;
-                    resultDiv.innerHTML = tries > 0 ? `X - Be careful, you only get ${tries} tries...` : "Boom, a house in every neighborhood gone...";
-                    if (tries === 0) {
-                        storyText.innerHTML = "The city blows up...";
-                        return;
-                    }
-                }
-            } else if (stage === 2) {
-                storyText.innerHTML = "Riddle 1: 'I end what begins and silence what speaks...'";
-                if (userAnswer === 'killed') {
-                    storyText.innerHTML = "Riddle 2: 'I am the one who sees but cannot be seen...'";
-                    stage = 3;
-                } else {
-                    resultDiv.innerHTML = `X - Try again.`;
-                }
-            } else if (stage === 3) {
-                if (userAnswer === 'i') {
-                    storyText.innerHTML = "Riddle 3: 'I stand between half and a century’s reign...'";
-                    stage = 4;
-                } else {
-                    resultDiv.innerHTML = `X - Try again.`;
-                }
-            } else if (stage === 4) {
-                if (userAnswer === '50') {
-                    storyText.innerHTML = "Correct! What's my secret?";
-                    stage = 5;
-                } else {
-                    resultDiv.innerHTML = `X - Try again.`;
-                }
-            } else if (stage === 5) {
-                if (userAnswer === 'i killed 50 people') {
-                    storyText.innerHTML = "Correct! Oh, but don't tell anyone...";
-                    stage = 6;
-                } else {
-                    resultDiv.innerHTML = `X - Try again.`;
-                }
-            } else if (stage === 6) {
-                storyText.innerHTML = "Now that you've figured me out, I should tell you who I am... I am-";
-                setTimeout(() => {
-                    document.body.style.backgroundColor = "black";
-                    document.body.innerHTML = "";  // Clear the page, simulating a blackout.
-                }, 3000);
-            }
-        }
-    </script>
+    <script src="script.js"></script> <!-- Ensure this points to your JavaScript file -->
 </body>
 </html>
-git commit -m "Add new file with pasted code"
+const riddles = [
+    {
+        question: "I dance on the edge of time, yet never leave a trace, In memories I linger, but soon I’m out of place. What am I, you ask? Just a whisper in the wind, A fleeting moment's echo, where forgetfulness begins.",
+        answer: "time",
+        warning: "Be careful, you only get 3 tries before the computer shuts down and the city blows. Until what?",
+        nextStage: true,
+    },
+    {
+        question: "I stand between half and a century's reign, A milestone marked by gold's glowing chain. In Roman tales, I'm a letter that's grand, Crack my code, and you'll understand.",
+        answer: "50",
+        nextStage: true,
+    },
+    {
+        question: "I end what begins and silence what speaks, With me, life's fire becomes cold and weak. I’m feared in stories, yet real in strife, What word am I, that ends all life?",
+        answer: "death",
+        nextStage: true,
+    },
+    {
+        question: "I am the one who sees but cannot be seen, A single stroke, yet everywhere I've been. Though small in size, I stand tall and proud, Always with you, whether silent or loud.",
+        answer: "i",
+        nextStage: false,
+    },
+];
+
+let currentRiddleIndex = 0;
+let wrongAttempts = 0;
+
+// Function to display chat and riddle
+function displayChat(message) {
+    const chatElement = document.getElementById("chat");
+    chatElement.innerHTML += `<div>${message}</div>`;
+}
+
+function displayRiddle() {
+    const riddleElement = document.getElementById("riddle");
+    riddleElement.textContent = riddles[currentRiddleIndex].question;
+    riddleElement.classList.remove("hidden");
+}
+
+// Function to handle answer submission
+function checkAnswer() {
+    const answerInput = document.getElementById("answer");
+    const userAnswer = answerInput.value.toLowerCase(); // Convert input to lowercase
+    const correctAnswer = riddles[currentRiddleIndex].answer.toLowerCase();
+
+    if (userAnswer === correctAnswer) {
+        displayChat("Correct! Now... your last steps in finding who I am ultimately ending my reign you have to find each answer to each riddle and unscramble the words to find my little secret... Hint, it didn't just happen to three families.");
+        answerInput.value = ""; // Clear input field
+        wrongAttempts = 0; // Reset wrong attempts
+        currentRiddleIndex++;
+        if (currentRiddleIndex < riddles.length) {
+            displayRiddle(); // Move to next riddle
+        } else {
+            endGame("Correct! Oh but don't tell anyone, remember it's a secret...");
+        }
+    } else {
+        wrongAttempts++;
+        answerInput.value = ""; // Clear input field
+        displayChat("X");
+        alert(riddles[currentRiddleIndex].warning);
+        
+        if (wrongAttempts >= 3) {
+            endGame("Game Over! Too many wrong attempts. BOOM!");
+        }
+    }
+}
+
+// Function to end the game
+function endGame(finalMessage) {
+    displayChat(finalMessage);
+    setTimeout(() => {
+        document.body.innerHTML = "<h1>Power Cut Off...</h1>";
+        document.body.style.backgroundColor = "black";
+    }, 3000); // Wait 3 seconds before showing the black screen
+}
+
+// Initialize the chat and first riddle
+displayChat("Not yet... find out my philosophy and I'll tell you.");
+displayRiddle();
+
+// Event listener for the submit button
+document.getElementById("submit").addEventListener("click", checkAnswer);
+git push origin main  # Replace 'main' with your branch name if different
